@@ -38,11 +38,11 @@ body::-webkit-scrollbar {
 
 input {
   color: var(--text);
-  background-color: var(--background);
-  border: 1px solid var(--accent);
+  background-color: var(--background-alt);
+  border: 1px solid var(--primary);
   border-radius: 8px;
   font-size: 0.75rem;
-  padding: 0.5em;
+  padding: 0.75em;
   transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
 }
 
@@ -157,7 +157,7 @@ button:active {
 }
 
 .navbar-toggle {
-  min-width: 50px;
+  min-width: 40px;
 }
 
 .navbar-menu {
@@ -246,6 +246,29 @@ button:active {
   padding: 0.25em;
 }
 
+/* || Start Login styles */
+.login-container {
+  background-color: var(--background-alt);
+  border-radius: 8px;
+  margin-top: 6em;
+  padding: 0.5em;
+}
+
+.login-container div {
+  padding-bottom: 0.25em;
+}
+
+.login-container label {
+  font-size: 0.75rem;
+  padding-inline: 0.2em;
+  padding-block: 0.5em;
+}
+
+.login-container button {
+  margin-block: 0.25em;
+}
+
+/* || End Login styles */
 /* || End General styles */
 /* || Animations */
 @keyframes fadein {
