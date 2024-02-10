@@ -11,4 +11,5 @@ pub struct UserLogin {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct User {
     pub user_id: String,
+    pub feed: Option<Feed>,
 }

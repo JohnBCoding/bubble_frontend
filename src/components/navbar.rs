@@ -2,6 +2,7 @@ use crate::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Properties)]
 pub struct Props {
+    pub on_refresh: Callback<MouseEvent>,
     //pub page_state: PageState,
     //pub on_change_state: Callback<PageState>,
 }
@@ -53,7 +54,8 @@ pub fn navbar(props: &Props) -> Html {
         <>
             <div class="row">
                 <span class="navbar-logo flex-center-y">{"Bubble"}</span>
-                <button class="navbar-toggle flex-end-x" onclick={&on_toggle_menu}>{"="}</button>
+                <button class="flex-end-x" onclick={&props.on_refresh}>{{"Refresh"}}</button>
+                <button class="navbar-toggle" onclick={&on_toggle_menu}>{"="}</button>
             </div>
             <div class="navbar-menu-hide" ref={menu_ref}>
                 <div class="col">

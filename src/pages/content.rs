@@ -4,6 +4,7 @@ use crate::prelude::*;
 pub fn content() -> Html {
     let logged_in_state = use_state(|| None::<User>);
 
+    // Load user if state is none
     if logged_in_state.is_none() {
         let window = web_sys::window().unwrap();
         let local_storage = window.local_storage().unwrap().unwrap();
@@ -15,16 +16,40 @@ pub fn content() -> Html {
         }
     }
 
-    if logged_in_state.is_some() {
-        wasm_bindgen_futures::spawn_local(async move {
-            let uri_base = std::env!("SERVER_URI_BASE");
-            let url = format!("{}/news/feed", uri_base);
-            let result = Request::get(&url)
-                .header("Content-Type", "application/json")
-                .credentials(web_sys::RequestCredentials::Include)
-                .send()
-                .await;
-        })
+    // If logged in, get news feed
+    if let Some(user) = logged_in_state.deref() {
+        if user.feed.is_none() {
+            let logged_in_state = logged_in_state.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let uri_base = std::env!("SERVER_URI_BASE");
+                let url = format!("{}/news/feed", uri_base);
+                let result = Request::get(&url)
+                    .header("Content-Type", "application/json")
+                    .credentials(web_sys::RequestCredentials::Include)
+                    .send()
+                    .await;
+
+                if let Ok(res) = result {
+                    if res.status() == 200 {
+                        // We good, deserialize data and set feed/save updated user since we now have a feed
+                        let feed = res.json::<Feed>().await.unwrap();
+                        let mut user = logged_in_state.deref().clone().unwrap();
+                        user.feed = Some(feed);
+                        let window = web_sys::window().unwrap();
+                        let local_storage = window.local_storage().unwrap().unwrap();
+                        let user_str = serde_json::to_string(&user).unwrap();
+                        local_storage.set("user", &user_str);
+                        logged_in_state.set(Some(user));
+                    } else {
+                        // Not good, likely expired token/unauth so log out user
+                        logged_in_state.set(None);
+                        let window = web_sys::window().unwrap();
+                        let local_storage = window.local_storage().unwrap().unwrap();
+                        local_storage.clear();
+                    }
+                }
+            })
+        }
     };
 
     let handle_set_login = {
@@ -37,20 +62,43 @@ pub fn content() -> Html {
         })
     };
 
+    let handle_on_refresh = {
+        let logged_in_state = logged_in_state.clone();
+        Callback::from(move |event: MouseEvent| {
+            let mut user = logged_in_state.deref().clone().unwrap();
+            user.feed = None;
+
+            logged_in_state.set(Some(user));
+        })
+    };
+
+    let news_cards_html = {
+        if let Some(user) = logged_in_state.deref().clone() {
+            if let Some(feed) = user.feed {
+                feed.data
+                    .iter()
+                    .map(|article| {
+                        html! {
+                            <NewsCard article={article.clone()}/>
+                        }
+                    })
+                    .collect::<Html>()
+            } else {
+                html! {}
+            }
+        } else {
+            html! {}
+        }
+    };
+
     html! {
         <main class="main-container col expand-x expand-y fade-in">
-            <NavBar />
+            <NavBar on_refresh={&handle_on_refresh}/>
             if logged_in_state.is_none() {
                 <Login on_set_login={&handle_set_login}/>
             } else {
                 <div class="col overflow-y">
-                    <NewsCard />
-                    <NewsCard />
-                    <NewsCard />
-                    <NewsCard />
-                    <NewsCard />
-                    <NewsCard />
-                    <NewsCard />
+                    {news_cards_html}
                 </div>
             }
         </main>

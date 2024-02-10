@@ -1,4 +1,4 @@
-/* || Vars */
+/* || Start Vars */
 :root {
     --background: #080707;
     --background-alt: #0d110d;
@@ -10,7 +10,7 @@
 
 /* || End Vars */
 
-/* || General styles */
+/* || Start General styles */
 
 * {
     color: var(--text);
@@ -150,6 +150,8 @@ button:active {
     border: 1px solid var(--accent);
 }
 
+/* || End General styles */
+
 .main-container {
     padding: 0.5em;
 }
@@ -189,7 +191,7 @@ button:active {
 }
 
 .navbar-link-selected {
-    color: var(--background);
+    color: var(--text);
     background-color: var(--accent);
 }
 
@@ -274,7 +276,7 @@ button:active {
 
 /* || End Login styles */
 
-/* || End General styles */
+
 
 /* || Animations */
 
