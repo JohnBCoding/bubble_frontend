@@ -8,8 +8,9 @@ pub struct UserLogin {
     pub return_secure_token: bool,
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct User {
     pub user_id: String,
     pub feed: Option<Feed>,
+    pub saved: Option<Vec<Article>>,
 }

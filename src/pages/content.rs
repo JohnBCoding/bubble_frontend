@@ -3,6 +3,7 @@ use crate::prelude::*;
 #[function_component(Content)]
 pub fn content() -> Html {
     let logged_in_state = use_state(|| None::<User>);
+    let page_state = use_state(|| PageState::Feed);
 
     // Load user if state is none
     if logged_in_state.is_none() {
@@ -62,6 +63,13 @@ pub fn content() -> Html {
         })
     };
 
+    let handle_on_change_state = {
+        let page_state = page_state.clone();
+        Callback::from(move |new_state: PageState| {
+            page_state.set(new_state);
+        })
+    };
+
     let handle_on_refresh = {
         let logged_in_state = logged_in_state.clone();
         Callback::from(move |event: MouseEvent| {
@@ -93,13 +101,23 @@ pub fn content() -> Html {
 
     html! {
         <main class="main-container col expand-x expand-y fade-in">
-            <NavBar on_refresh={&handle_on_refresh}/>
+            <NavBar page_state={page_state.deref().clone()} on_refresh={&handle_on_refresh} on_change_state={&handle_on_change_state}/>
             if logged_in_state.is_none() {
                 <Login on_set_login={&handle_set_login}/>
             } else {
-                <div class="col overflow-y">
-                    {news_cards_html}
-                </div>
+                {
+                    match *page_state {
+                        PageState::Feed => {
+                            html! {
+                            <div class="col overflow-y fade-in">
+                                {news_cards_html}
+                            </div>}
+                        }
+                        PageState::Saved => {
+                            html!{<SavedNews saved={logged_in_state.deref().clone().unwrap().saved} />}
+                        }
+                    }
+                }
             }
         </main>
     }

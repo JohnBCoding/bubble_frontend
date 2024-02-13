@@ -179,7 +179,7 @@ button:active {
     position: fixed;
     left: -400px;
     padding-top: 2em;
-    padding-left: 1em;
+    padding-left: 0.5em;
     transition: 0.25s;
 }
 
@@ -187,12 +187,15 @@ button:active {
     color: var(--text);
     background-color: var(--background);
     text-decoration: none;
-    padding: 0.125em;
+    text-align: center;
+    padding: 0.5em;
+    border-radius: 8px;
 }
 
 .navbar-link-selected {
     color: var(--text);
     background-color: var(--accent);
+
 }
 
 .news-card-container {
