@@ -3,8 +3,9 @@ use crate::prelude::*;
 #[derive(Clone, Debug, PartialEq, Properties)]
 pub struct Props {
     pub page_state: PageState,
-    pub on_refresh: Callback<MouseEvent>,
+    pub on_refresh_state: Callback<bool>,
     pub on_change_state: Callback<PageState>,
+    pub on_logout: Callback<bool>,
 }
 
 #[function_component(NavBar)]
@@ -28,6 +29,7 @@ pub fn navbar(props: &Props) -> Html {
     let on_navigate = {
         let menu_ref = menu_ref.clone();
         let on_change_state = props.on_change_state.clone();
+        let on_logout = props.on_logout.clone();
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
 
@@ -38,6 +40,10 @@ pub fn navbar(props: &Props) -> Html {
             let new_state = match value.as_str() {
                 "feed" => PageState::Feed,
                 "saved" => PageState::Saved,
+                "logout" => {
+                    on_logout.emit(true);
+                    PageState::Login
+                }
                 _ => PageState::Feed,
             };
 
@@ -48,12 +54,22 @@ pub fn navbar(props: &Props) -> Html {
         })
     };
 
+    let on_refresh = {
+        let on_refresh_state = props.on_refresh_state.clone();
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
+            on_refresh_state.emit(true);
+        })
+    };
+
     html! {
         <>
             <div class="row">
                 <span class="navbar-logo flex-center-y">{"Bubble"}</span>
-                <button class="flex-end-x" onclick={&props.on_refresh}>{{"Refresh"}}</button>
-                <button class="navbar-toggle" onclick={&on_toggle_menu}>{"="}</button>
+                if props.page_state != PageState::Login {
+                    <button class="flex-end-x" onclick={&on_refresh}>{{"Refresh"}}</button>
+                    <button class="navbar-toggle" onclick={&on_toggle_menu}>{"="}</button>
+                }
             </div>
             <div class="navbar-menu-hide" ref={menu_ref}>
                 {
@@ -76,6 +92,7 @@ pub fn navbar(props: &Props) -> Html {
                                 </div>
                             }
                         },
+                        _=> {html!{}}
                     }
                 }
             </div>

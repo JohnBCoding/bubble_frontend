@@ -11,6 +11,4 @@ pub struct UserLogin {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct User {
     pub user_id: String,
-    pub feed: Option<Feed>,
-    pub saved: Option<Vec<Article>>,
 }

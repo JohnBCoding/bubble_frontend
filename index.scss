@@ -246,12 +246,17 @@ button:active {
 }
 
 .news-card-button {
-    color: var(--background);
+    color: var(--accent);
     background-color: var(--background-alt);
-    border: none;
-    min-width: 0;
     width: 100%;
-    padding: 0.25em;
+    padding-top: .25em;
+}
+
+.news-card-svg {
+    display: block;
+    margin: auto;
+    width: 1.1em;
+    height: 1.1em;
 }
 
 /* || Start Login styles */
@@ -278,8 +283,6 @@ button:active {
 }
 
 /* || End Login styles */
-
-
 
 /* || Animations */
 

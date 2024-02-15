@@ -14,7 +14,9 @@ mod prelude {
     pub use serde::{Deserialize, Serialize};
     pub use std::ops::Deref;
     pub use wasm_bindgen::JsValue;
-    pub use web_sys::{HtmlAnchorElement, HtmlDivElement, HtmlInputElement, HtmlSelectElement};
+    pub use web_sys::{
+        HtmlAnchorElement, HtmlDivElement, HtmlInputElement, HtmlSelectElement, SvgElement,
+    };
     pub use yew::prelude::*;
     pub use yew_router::prelude::*;
 }
