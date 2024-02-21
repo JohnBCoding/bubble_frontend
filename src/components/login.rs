@@ -6,7 +6,7 @@ pub struct Props {
 }
 
 #[function_component(Login)]
-pub fn logion(props: &Props) -> Html {
+pub fn login(props: &Props) -> Html {
     let email_state = use_state(|| "".to_string());
     let password_state = use_state(|| "".to_string());
 
@@ -36,7 +36,7 @@ pub fn logion(props: &Props) -> Html {
         let on_set_login = props.on_set_login.clone();
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
-            let action_type = "login".to_string();
+            let action_type = event.target_unchecked_into::<HtmlInputElement>().value();
             let user = UserLogin {
                 email: email_state.deref().clone(),
                 password: password_state.deref().clone(),
@@ -82,8 +82,8 @@ pub fn logion(props: &Props) -> Html {
                 <label for="password">{"Password"}</label>
                 <input id="password" type="password" placeholder={"Password..."} onchange={&on_change_password}/>
             </div>
-            <button onclick={&on_login}>{"Login"}</button>
-            <button>{"Register"}</button>
+            <button value={"login"} onclick={&on_login}>{"Login"}</button>
+            <button value={"create"} onclick={&on_login}>{"Register"}</button>
         </div>
     }
 }

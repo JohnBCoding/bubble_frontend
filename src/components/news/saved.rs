@@ -106,6 +106,9 @@ pub fn news_saved(props: &Props) -> Html {
         })
     };
 
+    let handle_on_save = { Callback::from(move |_index: usize| {}) };
+    let handle_on_rate = { Callback::from(move |(_index, _like)| {}) };
+
     let news_cards_html = {
         if let Some(saved) = saved_state.deref() {
             saved
@@ -113,7 +116,7 @@ pub fn news_saved(props: &Props) -> Html {
                 .enumerate()
                 .map(|(index, save)| {
                     html! {
-                        <NewsCard article={save.article.clone()} article_index={index} saved={save.clone()} on_delete={&handle_on_delete} />
+                        <NewsCard article={save.article.clone()} article_index={index} saved={save.clone()} on_save={&handle_on_save} on_rate={&handle_on_rate} on_delete={&handle_on_delete} />
                     }
                 })
                 .collect::<Html>()

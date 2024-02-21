@@ -5,14 +5,17 @@ pub struct Props {
     pub article: Article,
     pub article_index: usize,
     pub saved: Option<Save>,
+    pub on_save: Callback<usize>,
+    pub on_rate: Callback<(usize, bool)>,
     pub on_delete: Callback<usize>,
 }
 
 #[function_component(NewsCard)]
 pub fn news_card(props: &Props) -> Html {
     let on_click_action = {
-        let article = props.article.clone();
         let article_index = props.article_index.clone();
+        let on_save = props.on_save.clone();
+        let on_rate = props.on_rate.clone();
         let on_delete = props.on_delete.clone();
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
@@ -27,40 +30,10 @@ pub fn news_card(props: &Props) -> Html {
                 event.target_unchecked_into::<SvgElement>().id()
             };
 
-            use gloo_console::log;
-            log!(format!("{:?}", value));
-
-            let article = article.clone();
             match value.as_str() {
-                "save" => wasm_bindgen_futures::spawn_local(async move {
-                    let window = web_sys::window().unwrap();
-                    let local_storage = window.local_storage().unwrap().unwrap();
-                    if let Ok(user_res) = local_storage.get("user") {
-                        if let Some(user_str) = user_res {
-                            let user = serde_json::from_str::<User>(&user_str).unwrap();
-                            let save = Save::new(&user.user_id, &article);
-                            let save_str = serde_json::to_string(&save).unwrap();
-                            let uri_base = std::env!("SERVER_URI_BASE");
-                            let url = format!("{}/news/save", uri_base);
-                            let result = Request::post(&url)
-                                .header("Content-Type", "application/json")
-                                .body(JsValue::from_str(&save_str))
-                                .credentials(web_sys::RequestCredentials::Include)
-                                .send()
-                                .await;
-
-                            if let Ok(res) = result {
-                                if res.status() == 200 {
-                                    // We good
-                                    let saved_str =
-                                        serde_json::to_string(&Vec::<Save>::new()).unwrap();
-                                    let _ = local_storage.set("saved", &saved_str);
-                                }
-                            }
-                            // send notification here
-                        }
-                    }
-                }),
+                "save" => on_save.emit(article_index),
+                "like" => on_rate.emit((article_index, true)),
+                "dislike" => on_rate.emit((article_index, false)),
                 "delete" => on_delete.emit(article_index),
                 _ => {}
             }

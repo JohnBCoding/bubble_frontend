@@ -36,9 +36,10 @@ pub fn news_feed(props: &Props) -> Html {
         if !loaded {
             let feed_state = feed_state.clone();
             let on_logout = props.on_logout.clone();
+            let user_id = props.user_id.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let uri_base = std::env!("SERVER_URI_BASE");
-                let url = format!("{}/news/feed", uri_base);
+                let url = format!("{}/news/feed/{}", uri_base, user_id);
                 let result = Request::get(&url)
                     .header("Content-Type", "application/json")
                     .credentials(web_sys::RequestCredentials::Include)
@@ -54,6 +55,8 @@ pub fn news_feed(props: &Props) -> Html {
                         let user_str = serde_json::to_string(&feed).unwrap();
                         let _ = local_storage.set("feed", &user_str);
                         feed_state.set(Some(feed));
+                    } else if res.status() == 429 { // Limited
+                         // Put rate limited notification here
                     } else {
                         // Not good, likely expired token/unauth so log out user
                         on_logout.emit(true);
@@ -63,7 +66,105 @@ pub fn news_feed(props: &Props) -> Html {
         }
     }
 
-    let handle_on_delete = { Callback::from(move |index: usize| {}) };
+    let handle_on_save = {
+        let feed_state = feed_state.clone();
+        Callback::from(move |article_index: usize| {
+            let feed_state = feed_state.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let mut feed = feed_state.deref().clone().unwrap();
+                let mut articles = feed.data;
+                let window = web_sys::window().unwrap();
+                let local_storage = window.local_storage().unwrap().unwrap();
+                if let Ok(user_res) = local_storage.get("user") {
+                    if let Some(user_str) = user_res {
+                        let user = serde_json::from_str::<User>(&user_str).unwrap();
+                        let save = Save::new(&user.user_id, &articles[article_index]);
+                        let save_str = serde_json::to_string(&save).unwrap();
+                        let uri_base = std::env!("SERVER_URI_BASE");
+                        let url = format!("{}/news/save", uri_base);
+                        let result = Request::post(&url)
+                            .header("Content-Type", "application/json")
+                            .body(JsValue::from_str(&save_str))
+                            .credentials(web_sys::RequestCredentials::Include)
+                            .send()
+                            .await;
+
+                        if let Ok(res) = result {
+                            if res.status() == 200 {
+                                // We good
+                                let saved_str = serde_json::to_string(&Vec::<Save>::new()).unwrap();
+                                let _ = local_storage.set("saved", &saved_str);
+
+                                // delete article from feed, resave feed
+                                articles.remove(article_index);
+                                feed.data = articles;
+                                let feed_str = serde_json::to_string(&feed).unwrap();
+                                let _ = local_storage.set("feed", &feed_str);
+                                feed_state.set(Some(feed));
+                            }
+                        }
+                        // send notification here
+                    }
+                }
+            })
+        })
+    };
+
+    let handle_on_rate = {
+        let feed_state = feed_state.clone();
+        Callback::from(move |(article_index, like)| {
+            let feed_state = feed_state.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let feed = feed_state.deref().clone().unwrap();
+                let articles = feed.data;
+                let article_str = serde_json::to_string(&articles[article_index]).unwrap();
+                let window = web_sys::window().unwrap();
+                let local_storage = window.local_storage().unwrap().unwrap();
+                if let Ok(user_res) = local_storage.get("user") {
+                    if let Some(user_str) = user_res {
+                        let user = serde_json::from_str::<User>(&user_str).unwrap();
+                        let uri_base = std::env!("SERVER_URI_BASE");
+                        let url = format!(
+                            "{}/news/rate/{}/{}",
+                            uri_base,
+                            user.user_id,
+                            if like { "like" } else { "dislike" }
+                        );
+                        let result = Request::post(&url)
+                            .header("Content-Type", "application/json")
+                            .body(JsValue::from_str(&article_str))
+                            .credentials(web_sys::RequestCredentials::Include)
+                            .send()
+                            .await;
+
+                        if let Ok(res) = result {
+                            if res.status() == 200 {
+                                // We good
+
+                                if !like {
+                                    // Remove article from state
+                                    let mut feed = feed_state.deref().clone().unwrap();
+                                    let mut articles = feed.data;
+                                    articles.remove(article_index);
+                                    feed.data = articles;
+
+                                    // Remove from storeage
+                                    let feed_str = serde_json::to_string(&feed).unwrap();
+                                    let _ = local_storage.set("feed", &feed_str);
+
+                                    // Set new state
+                                    feed_state.set(Some(feed));
+                                }
+                            }
+                        }
+                        // send notification here
+                    }
+                }
+            })
+        })
+    };
+
+    let handle_on_delete = { Callback::from(move |_index: usize| {}) };
 
     let news_cards_html = {
         if let Some(feed) = feed_state.deref() {
@@ -72,7 +173,7 @@ pub fn news_feed(props: &Props) -> Html {
                 .enumerate()
                 .map(|(index, article)| {
                     html! {
-                        <NewsCard article={article.clone()} article_index={index} saved={None} on_delete={&handle_on_delete} />
+                        <NewsCard article={article.clone()} article_index={index} saved={None} on_save={&handle_on_save} on_rate={&handle_on_rate} on_delete={&handle_on_delete} />
                     }
                 })
                 .collect::<Html>()
