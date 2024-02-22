@@ -10,24 +10,31 @@ pub struct Props {
 
 #[function_component(NavBar)]
 pub fn navbar(props: &Props) -> Html {
+    let theme_state = use_state(|| false);
     let menu_ref = use_node_ref();
+    let refresh_ref = use_node_ref();
 
     let on_toggle_menu = {
         let menu_ref = menu_ref.clone();
+        let refresh_ref = refresh_ref.clone();
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
 
             let menu = menu_ref.cast::<HtmlDivElement>().unwrap();
+            let refresh_button = refresh_ref.cast::<HtmlInputElement>().unwrap();
             if menu.class_name().contains("navbar-menu-hide") {
                 menu.set_class_name("navbar-menu row expand-x expand-y");
+                refresh_button.set_hidden(false);
             } else {
                 menu.set_class_name("navbar-menu-hide");
+                refresh_button.set_hidden(true);
             }
         })
     };
 
     let on_navigate = {
         let menu_ref = menu_ref.clone();
+        let refresh_ref = refresh_ref.clone();
         let on_change_state = props.on_change_state.clone();
         let on_logout = props.on_logout.clone();
         Callback::from(move |event: MouseEvent| {
@@ -49,6 +56,8 @@ pub fn navbar(props: &Props) -> Html {
 
             let menu = menu_ref.cast::<HtmlDivElement>().unwrap();
             menu.set_class_name("navbar-menu-hide");
+            let refresh_button = refresh_ref.cast::<HtmlInputElement>().unwrap();
+            refresh_button.set_hidden(true);
 
             on_change_state.emit(new_state);
         })
@@ -56,18 +65,51 @@ pub fn navbar(props: &Props) -> Html {
 
     let on_refresh = {
         let on_refresh_state = props.on_refresh_state.clone();
+        let menu_ref = menu_ref.clone();
+        let refresh_ref = refresh_ref.clone();
         Callback::from(move |event: MouseEvent| {
             event.prevent_default();
+            let menu = menu_ref.cast::<HtmlDivElement>().unwrap();
+            menu.set_class_name("navbar-menu-hide");
+            let refresh_button = refresh_ref.cast::<HtmlInputElement>().unwrap();
+            refresh_button.set_hidden(true);
+
             on_refresh_state.emit(true);
+        })
+    };
+
+    let on_toggle_darkmode = {
+        let theme_state = theme_state.clone();
+        Callback::from(move |event: MouseEvent| {
+            event.prevent_default();
+
+            let button = event.target_unchecked_into::<HtmlInputElement>();
+            let document_element = web_sys::window()
+                .unwrap()
+                .document()
+                .unwrap()
+                .document_element()
+                .unwrap();
+
+            if *theme_state {
+                button.set_inner_text("Dark Mode");
+                let _ = document_element.set_attribute("data-theme", "light");
+            } else {
+                button.set_inner_text("Light Mode");
+                let _ = document_element.set_attribute("data-theme", "dark");
+            }
+
+            theme_state.set(!*theme_state);
         })
     };
 
     html! {
         <>
             <div class="row">
-                <span class="navbar-logo flex-center-y">{"Bubble"}</span>
                 if props.page_state != PageState::Login {
-                    <button class="flex-end-x" onclick={&on_refresh}>{{"Refresh"}}</button>
+                    <img class="navbar-logo" src="imgs/bubble-logo.png" />
+                    <button class="flex-end-x" onclick={&on_toggle_darkmode}>{"Dark Mode"}</button>
+                    <button class="flex-end-x on-top" onclick={&on_refresh} hidden=true ref={refresh_ref}>{"Refresh"}</button>
                     <button class="navbar-toggle" onclick={&on_toggle_menu}>{"="}</button>
                 }
             </div>

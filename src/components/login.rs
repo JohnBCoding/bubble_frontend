@@ -72,18 +72,22 @@ pub fn login(props: &Props) -> Html {
     };
 
     html! {
-        <div class="login-container col expand-x">
-            <h1 class="flex-center-x">{"Login"}</h1>
-            <div class="col">
-                <label for="email">{"Email"}</label>
-                <input id="email" placeholder={"Email..."} onchange={&on_change_email}/>
+        <div class="col">
+            <img class="login-logo flex-center-x" src="imgs/bubble-logo.png" />
+            <div class="login-container col expand-x">
+                <h1 class="flex-center-x">{"Login"}</h1>
+                <div class="col">
+                    <label for="email">{"Email"}</label>
+                    <input id="email" placeholder={"Email..."} onchange={&on_change_email}/>
+                </div>
+                <div class="col">
+                    <label for="password">{"Password"}</label>
+                    <input id="password" type="password" placeholder={"Password..."} onchange={&on_change_password}/>
+                </div>
+                <button value={"login"} onclick={&on_login}>{"Login"}</button>
+                <button value={"create"} onclick={&on_login}>{"Register"}</button>
             </div>
-            <div class="col">
-                <label for="password">{"Password"}</label>
-                <input id="password" type="password" placeholder={"Password..."} onchange={&on_change_password}/>
-            </div>
-            <button value={"login"} onclick={&on_login}>{"Login"}</button>
-            <button value={"create"} onclick={&on_login}>{"Register"}</button>
         </div>
+
     }
 }

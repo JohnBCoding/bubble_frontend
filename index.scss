@@ -1,11 +1,20 @@
 /* || Start Vars */
 :root {
-    --background: #080707;
-    --background-alt: #0d110d;
-    --primary: #5f4247;
-    --secondary: #7f3f33;
-    --accent: #6d4541;
-    --text: #f0efea;
+    --background: #eef6f3;
+    --background-alt: #fffbfb;
+    --primary: #333333;
+    --secondary: #100077;
+    --accent: #5b4eb1;
+    --text: #131314;
+}
+
+[data-theme="dark"] {
+    --background: #252523;
+    --background-alt: #333333;
+    --primary: #2F4F4F;
+    --secondary: #6A5ACD;
+    --accent: #4b7e7e;
+    --text: #eef6f3;
 }
 
 /* || End Vars */
@@ -76,9 +85,9 @@ option {
 }
 
 button {
-    color: var(--text);
-    background-color: var(--primary);
-    border: 1px solid var(--primary);
+    color: var(--background);
+    background-color: var(--accent);
+    border: 1px solid var(--accent);
     border-radius: 8px;
     min-width: 75px;
     font-size: 0.75rem;
@@ -150,10 +159,20 @@ button:active {
     border: 1px solid var(--accent);
 }
 
+.on-top {
+    z-index: 10;
+}
+
 /* || End General styles */
 
 .main-container {
     padding: 0.5em;
+}
+
+.navbar-logo {
+    max-width: 4em;
+    max-height: 3em;
+    padding: 0;
 }
 
 .navbar-logo,
@@ -193,14 +212,14 @@ button:active {
 }
 
 .navbar-link-selected {
-    color: var(--text);
+    color: var(--background);
     background-color: var(--accent);
 
 }
 
 .news-card-container {
     background-color: var(--background-alt);
-    border: 1px solid var(--primary);
+    border: 1px solid var(--secondary);
     border-radius: 8px;
     padding: 0.5em;
     text-align: left;
@@ -230,6 +249,7 @@ button:active {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    margin: 0;
 }
 
 .news-card-container span {
@@ -248,8 +268,11 @@ button:active {
 .news-card-button {
     color: var(--accent);
     background-color: var(--background-alt);
+    border: none;
+    min-width: 0;
     width: 100%;
-    padding-top: .25em;
+    padding: 0;
+    padding-block: .25em;
 }
 
 .news-card-svg {
@@ -261,11 +284,18 @@ button:active {
 
 /* || Start Login styles */
 
+.login-logo {
+    max-width: 8em;
+    max-height: 6em;
+    margin-top: 3em;
+}
+
 .login-container {
     background-color: var(--background-alt);
+    border: 1px solid var(--accent);
     border-radius: 8px;
-    margin-top: 6em;
     padding: 0.5em;
+    margin-top: 3em;
 }
 
 .login-container div {
