@@ -1,7 +1,7 @@
 /* || Start Vars */
 :root {
     --background: #eef6f3;
-    --background-alt: #fffbfb;
+    --background-alt: #ffffff;
     --primary: #333333;
     --secondary: #100077;
     --accent: #5b4eb1;
@@ -10,11 +10,11 @@
 
 [data-theme="dark"] {
     --background: #252523;
-    --background-alt: #333333;
+    --background-alt: #131314;
     --primary: #2F4F4F;
     --secondary: #6A5ACD;
-    --accent: #4b7e7e;
-    --text: #eef6f3;
+    --accent: #5b4eb1;
+    --text: #dadada;
 }
 
 /* || End Vars */
@@ -256,12 +256,12 @@ button:active {
     color: var(--accent);
     font-size: 0.4rem;
     font-weight: bold;
-    vertical-align: top;
+    padding-bottom: 0.3em;
 }
 
 .news-card-container img {
-    width: 100%;
-    height: 75%;
+    width: 100px;
+    height: 90px;
     border-radius: 8px;
 }
 
@@ -273,6 +273,10 @@ button:active {
     width: 100%;
     padding: 0;
     padding-block: .25em;
+}
+
+.news-card-button svg path {
+    fill: var(--accent)
 }
 
 .news-card-svg {
