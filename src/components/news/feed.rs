@@ -6,6 +6,7 @@ pub struct Props {
     pub refresh: bool,
     pub on_logout: Callback<bool>,
     pub on_refresh: Callback<bool>,
+    pub on_update_alert_text: Callback<String>,
 }
 
 #[function_component(NewsFeed)]
@@ -36,6 +37,7 @@ pub fn news_feed(props: &Props) -> Html {
         if !loaded {
             let feed_state = feed_state.clone();
             let on_logout = props.on_logout.clone();
+            let on_update_alert_text = props.on_update_alert_text.clone();
             let user_id = props.user_id.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let uri_base = std::env!("SERVER_URI_BASE");
@@ -54,6 +56,11 @@ pub fn news_feed(props: &Props) -> Html {
                         let local_storage = window.local_storage().unwrap().unwrap();
                         let user_str = serde_json::to_string(&feed).unwrap();
                         let _ = local_storage.set("feed", &user_str);
+                        
+                        // Send alert if feed wasn't updated due to refresh cooldown
+                        if let Some(cooldown) = feed.refresh_cooldown {
+                            on_update_alert_text.emit(format!("Refresh Cooldown ({})", cooldown));
+                        }
                         feed_state.set(Some(feed));
                     } else if res.status() == 429 { // Limited
                          // Put rate limited notification here

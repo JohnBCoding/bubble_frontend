@@ -217,6 +217,18 @@ button:active {
 
 }
 
+#alert-text {
+    background-color: var(--secondary);
+    border-radius: 8px;
+    text-align: center;
+    padding-inline: 0.25em;
+}
+
+#alert-text span {
+    color: var(--background);
+    font-size: 0.5rem;
+}
+
 .news-card-container {
     background-color: var(--background-alt);
     border: 1px solid var(--secondary);

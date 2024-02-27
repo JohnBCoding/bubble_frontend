@@ -3,6 +3,7 @@ use crate::prelude::*;
 #[derive(Clone, Debug, PartialEq, Properties)]
 pub struct Props {
     pub page_state: PageState,
+    pub alert_text: String,
     pub on_refresh_state: Callback<bool>,
     pub on_change_state: Callback<PageState>,
     pub on_logout: Callback<bool>,
@@ -108,6 +109,11 @@ pub fn navbar(props: &Props) -> Html {
             <div class="row">
                 if props.page_state != PageState::Login {
                     <img class="navbar-logo" src="imgs/bubble-logo.png" />
+                    if !&props.alert_text.is_empty() {
+                        <div class="flex-center-x" id="alert-text">
+                            <span>{&props.alert_text}</span>
+                        </div>
+                    }
                     <button class="flex-end-x" onclick={&on_toggle_darkmode}>{"Dark Mode"}</button>
                     <button class="flex-end-x on-top" onclick={&on_refresh} hidden=true ref={refresh_ref}>{"Refresh"}</button>
                     <button class="navbar-toggle" onclick={&on_toggle_menu}>{"="}</button>

@@ -4,6 +4,7 @@ use crate::prelude::*;
 pub struct Feed {
     pub pagination: Pagination,
     pub data: Vec<Article>,
+    pub refresh_cooldown: Option<i32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]

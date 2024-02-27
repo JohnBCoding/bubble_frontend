@@ -4,6 +4,7 @@ use crate::prelude::*;
 pub fn content() -> Html {
     let logged_in_state = use_state(|| None::<User>);
     let page_state = use_state(|| PageState::Login);
+    let alert_text_state = use_state(|| "".to_string());
     let refresh_state = use_state(|| false);
 
     // Load user if state is none
@@ -51,6 +52,18 @@ pub fn content() -> Html {
         })
     };
 
+    let handle_update_alert_text = {
+        let alert_text_state = alert_text_state.clone();
+        Callback::from(move |new_text: String| {
+            let alert_text_state = alert_text_state.clone();
+            alert_text_state.set(new_text);
+            let _ = Timeout::new(3000, move || {
+                alert_text_state.set("".to_string());
+            })
+            .forget();
+        })
+    };
+
     let handle_on_refresh = {
         let refresh_state = refresh_state.clone();
         Callback::from(move |_| {
@@ -85,7 +98,7 @@ pub fn content() -> Html {
 
     html! {
         <main class="main-container col expand-x expand-y fade-in">
-            <NavBar page_state={page_state.deref().clone()} on_refresh_state={&handle_on_refresh} on_change_state={&handle_on_change_state} on_logout={&handle_on_logout}/>
+            <NavBar page_state={page_state.deref().clone()} alert_text={alert_text_state.deref().clone()} on_refresh_state={&handle_on_refresh} on_change_state={&handle_on_change_state} on_logout={&handle_on_logout}/>
             {
                 match *page_state {
                     PageState::Login => {
@@ -95,7 +108,7 @@ pub fn content() -> Html {
                     }
                     PageState::Feed => {
                         html! {
-                            <NewsFeed user_id={logged_in_state.deref().clone().unwrap().user_id} refresh={*refresh_state} on_refresh={&handle_on_refresh} on_logout={&handle_on_logout}/>
+                            <NewsFeed user_id={logged_in_state.deref().clone().unwrap().user_id} refresh={*refresh_state} on_refresh={&handle_on_refresh} on_logout={&handle_on_logout} on_update_alert_text={&handle_update_alert_text}/>
                         }
                     },
                     PageState::Saved => {

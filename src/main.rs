@@ -10,6 +10,7 @@ mod prelude {
     pub use crate::page_state::*;
     pub use crate::pages::*;
     pub use bson::oid::ObjectId;
+    pub use gloo_timers::callback::Timeout;
     pub use reqwasm::http::Request;
     pub use serde::{Deserialize, Serialize};
     pub use std::ops::Deref;
