@@ -23,5 +23,6 @@ pub struct Article {
     pub source: String,
     pub image: String,
     pub category: String,
+    pub language: String,
     pub published_at: String,
 }

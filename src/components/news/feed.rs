@@ -141,20 +141,18 @@ pub fn news_feed(props: &Props) -> Html {
                             if res.status() == 200 {
                                 // We good
 
-                                if !like {
-                                    // Remove article from state
-                                    let mut feed = feed_state.deref().clone().unwrap();
-                                    let mut articles = feed.data;
-                                    articles.remove(article_index);
-                                    feed.data = articles;
+                                // Remove article from state
+                                let mut feed = feed_state.deref().clone().unwrap();
+                                let mut articles = feed.data;
+                                articles.remove(article_index);
+                                feed.data = articles;
 
-                                    // Remove from storeage
-                                    let feed_str = serde_json::to_string(&feed).unwrap();
-                                    let _ = local_storage.set("feed", &feed_str);
+                                // Remove from storage
+                                let feed_str = serde_json::to_string(&feed).unwrap();
+                                let _ = local_storage.set("feed", &feed_str);
 
-                                    // Set new state
-                                    feed_state.set(Some(feed));
-                                }
+                                // Set new state
+                                feed_state.set(Some(feed));
                             }
                         }
                         // send notification here

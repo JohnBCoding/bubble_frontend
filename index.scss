@@ -358,10 +358,57 @@ button:active {
 
 
 @media screen and (min-width: 920px) {
-    .main-container {
-        margin-inline: auto;
-        padding-block: 5em;
-        max-width: 60%;
+    * {
+        font: 1.8rem "Tahoma";
+        line-height: 24px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent) var(--background-alt);
     }
 
+    /* Works on Chrome, Edge, and Safari */
+    *::-webkit-scrollbar {
+        width: 0.25em;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: var(--background-alt);
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: var(--background-alt);
+        border-radius: 7px;
+        border: 2px solid var(--accent);
+    }
+
+    .main-container {
+        padding: 0.25em;
+        max-width: 100%;
+    }
+
+    .login-logo {
+        max-width: 8em;
+        max-height: 6em;
+        margin-top: 1em;
+    }
+
+    .login-container {
+        max-width: 40%;
+        margin-top: 1em;
+        margin-inline: auto;
+    }
+
+    .navbar-logo {
+        max-width: 4em;
+        max-height: 3em;
+    }
+
+    .navbar-menu {
+        padding-top: 2em;
+        padding-left: 0.5em;
+    }
+
+    .news-card-container img {
+        width: 200px;
+        height: 180px;
+    }
 }
