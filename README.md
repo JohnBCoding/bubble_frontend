@@ -1,10 +1,8 @@
 # Bubble
 
-### Bubble provides news via API. Bubble then allows you to upvote/downvote that news which is saved as a preference on the server to try and provide you more news revelent to your tastes. You can also save these articles which can be viewed and deleted under the "Saved" menu option. 
+### Bubble uses the [Mediastack](https://mediastack.com/) API to provide news. Bubble then allows you to upvote/downvote that news which is saved as a preference on the server to try and provide you more news revelent to your tastes. You can also save these articles which can be viewed and deleted under the "Saved" menu option. 
 
-**This frontend is made fully in Rust, using the Yew Rust crate for the frontend. **
-
-** No longer being updated, was created for learning purposes. **
+**This frontend is made fully in Rust, using the Yew Rust crate for the frontend.**
 
 ## Mobile View
 ![mobile_login](https://github.com/JohnBCoding/bubble_frontend/assets/12802117/8691147c-eb9f-4b8b-9d65-e0b47ad4fda8)
