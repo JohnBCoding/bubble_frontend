@@ -56,7 +56,7 @@ pub fn news_feed(props: &Props) -> Html {
                         let local_storage = window.local_storage().unwrap().unwrap();
                         let user_str = serde_json::to_string(&feed).unwrap();
                         let _ = local_storage.set("feed", &user_str);
-                        
+
                         // Send alert if feed wasn't updated due to refresh cooldown
                         if let Some(cooldown) = feed.refresh_cooldown {
                             on_update_alert_text.emit(format!("Refresh Cooldown ({})", cooldown));

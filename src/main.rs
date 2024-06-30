@@ -26,16 +26,11 @@ use prelude::*;
 enum Route {
     #[at("/")]
     Content,
-    // #[at("/login/callback")]
-    // Callback,
 }
 
 fn match_route(route: Route) -> Html {
     match route {
         Route::Content => html!(<Content/>),
-        // Route::Callback => {
-        //     html!(<LoginCallback/>)
-        // }
     }
 }
 
